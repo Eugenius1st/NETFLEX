@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { motion, useAnimation, useViewportScroll } from 'framer-motion';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-// npm i framer-motion
+import { useForm } from 'react-hook-form';
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -11,17 +11,14 @@ const Nav = styled(motion.nav)`
   position: fixed;
   width: 100%;
   top: 0;
-  background-color: black;
-  font-size: 14px;
+  height: 80px;
   padding: 20px 60px;
-  color: white;
 `;
 
 const Col = styled.div`
   display: flex;
-  align-items: center;
+  align-items: centers;
 `;
-
 const Logo = styled(motion.svg)`
   margin-right: 50px;
   width: 95px;
@@ -51,34 +48,23 @@ const Item = styled.li`
   }
 `;
 
-const Search = styled.span`
-  position: relative;
-  left: 15;
+const Search = styled.form`
   color: white;
   display: flex;
   align-items: center;
+  position: relative;
   svg {
-    margin-left: -90px;
     height: 25px;
   }
 `;
 
-const logoVariants = {
-  normal: { fillOpacity: 1 },
-  active: {
-    fillOpacity: [0, 1, 0],
-    // scale: [1, 1.5, 1.2, 0],
-    transition: { repeat: Infinity },
-  },
-};
-
 const Circle = styled(motion.span)`
-  //layoutID 사용 전에 Circle을 motion.span으로 바꿔주어야 한다
   position: absolute;
   width: 5px;
   height: 5px;
-  border-radius: 5px;
+  border-radius: 2.5px;
   bottom: -5px;
+  // position: absolute일 때 margin:0 auto;가 안 먹히는데 이때 left:0, right:0을 주면 됨
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -98,10 +84,32 @@ const Input = styled(motion.input)`
   border: 1px solid ${(props) => props.theme.white.lighter};
 `;
 
-const navVariants = {
-  top: { backgroundColor: 'rgba(0,0,0,0)' },
-  scroll: { backgroundColor: 'rgba(0,0,0,1)' },
+const logoVariants = {
+  normal: {
+    fillOpacity: 1,
+  },
+  active: {
+    // 애니메이션을 단계별로 실행시키고 싶다면 (배열처럼)
+    fillOpacity: [0, 1, 0],
+    transition: {
+      // 5번 반복
+      repeat: Infinity, // 숫자로 설정하면 해당 숫자만큼
+    },
+  },
 };
+
+const navVariants = {
+  up: {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
+  scroll: {
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+  },
+};
+
+interface IForm {
+  keyword: string;
+}
 
 function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -109,15 +117,20 @@ function Header() {
   const tvMatch = useRouteMatch('/tv');
   const inputAnimation = useAnimation();
   const navAnimation = useAnimation();
-  const { scrollY } = useViewportScroll();
+
+  const { scrollY, scrollYProgress } = useViewportScroll();
 
   const toggleSearch = () => {
     if (searchOpen) {
-      //triggerCloseInput
-      inputAnimation.start({ scaleX: 0 });
+      // trigger the close animation
+      inputAnimation.start({
+        scaleX: 0,
+      });
     } else {
-      //triggerOpneanimation
-      inputAnimation.start({ scaleX: 1 });
+      // trigger the open animation
+      inputAnimation.start({
+        scaleX: 1,
+      });
     }
     setSearchOpen((prev) => !prev);
   };
@@ -127,17 +140,19 @@ function Header() {
       if (scrollY.get() > 80) {
         navAnimation.start('scroll');
       } else {
-        navAnimation.start('top');
+        navAnimation.start('up');
       }
     });
   }, [scrollY, navAnimation]);
 
+  const history = useHistory();
+  const { register, handleSubmit } = useForm<IForm>();
+  const onValid = (data: IForm) => {
+    console.log(data);
+    history.push(`/search?keyword=${data.keyword}`);
+  };
   return (
-    <Nav
-      variants={navVariants}
-      animate={navAnimation}
-      initial={{ backgroundColor: 'rgba(0,0,0,1)' }}
-    >
+    <Nav variants={navVariants} animate={navAnimation} initial="up">
       <Col>
         <Logo
           variants={logoVariants}
@@ -152,26 +167,24 @@ function Header() {
         </Logo>
         <Items>
           <Item>
-            <Link to="/">
-              Home {homeMatch?.isExact && <Circle layoutId="Circle" />}
-            </Link>
+            <Link to="/">Home </Link>
+            {homeMatch?.isExact && <Circle layoutId="circle" />}
           </Item>
           <Item>
-            <Link to="/tv">
-              Tv Shows {tvMatch && <Circle layoutId="Circle" />}
-            </Link>
+            <Link to="/tv">TV Shows </Link>
+            {tvMatch && <Circle layoutId="circle" />}
           </Item>
         </Items>
       </Col>
       <Col>
-        <Search>
+        <Search onSubmit={handleSubmit(onValid)}>
           <motion.svg
             onClick={toggleSearch}
-            animate={{ x: searchOpen ? -150 : 0 }}
+            animate={{ x: searchOpen ? -180 : 0 }}
+            transition={{ type: 'linear' }}
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
-            transition={{ type: 'linear' }}
           >
             <path
               fillRule="evenodd"
@@ -180,10 +193,11 @@ function Header() {
             ></path>
           </motion.svg>
           <Input
+            {...register('keyword', { required: true, minLength: 2 })}
             animate={inputAnimation}
+            initial={{ scaleX: 0 }}
             transition={{ type: 'linear' }}
-            initial={{ scaleX: searchOpen ? 1 : 0 }}
-            placeholder="search for movie or tv..."
+            placeholder="search for movie or tv show..."
           />
         </Search>
       </Col>

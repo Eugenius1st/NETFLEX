@@ -1,3 +1,5 @@
-export default function Tv() {
-  return <h1>tv</h1>;
+function Tv() {
+  return <h1>TV</h1>;
 }
+
+export default Tv;
