@@ -1,9 +1,10 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, useAnimation, useViewportScroll } from 'framer-motion';
 import { Link, useRouteMatch } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 // npm i framer-motion
 
-const Nav = styled.nav`
+const Nav = styled(motion.nav)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -51,8 +52,13 @@ const Item = styled.li`
 `;
 
 const Search = styled.span`
+  position: relative;
+  left: 15;
   color: white;
+  display: flex;
+  align-items: center;
   svg {
+    margin-left: -90px;
     height: 25px;
   }
 `;
@@ -66,7 +72,8 @@ const logoVariants = {
   },
 };
 
-const Circle = styled.span`
+const Circle = styled(motion.span)`
+  //layoutID 사용 전에 Circle을 motion.span으로 바꿔주어야 한다
   position: absolute;
   width: 5px;
   height: 5px;
@@ -78,14 +85,59 @@ const Circle = styled.span`
   background-color: ${(props) => props.theme.red};
 `;
 
+const Input = styled(motion.input)`
+  transform-origin: right center;
+  position: absolute;
+  right: 0px;
+  padding: 5px 10px;
+  padding-left: 40px;
+  z-index: -1;
+  color: white;
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid ${(props) => props.theme.white.lighter};
+`;
+
+const navVariants = {
+  top: { backgroundColor: 'rgba(0,0,0,0)' },
+  scroll: { backgroundColor: 'rgba(0,0,0,1)' },
+};
+
 function Header() {
+  const [searchOpen, setSearchOpen] = useState(false);
   const homeMatch = useRouteMatch('/');
   const tvMatch = useRouteMatch('/tv');
-  console.log(homeMatch, tvMatch);
-  //boolean 타입으로 반환 _ 항상 /는 true로 반환됨 따라서 Router 에서 home 은 가장 마지막에 써야 한다
+  const inputAnimation = useAnimation();
+  const navAnimation = useAnimation();
+  const { scrollY } = useViewportScroll();
+
+  const toggleSearch = () => {
+    if (searchOpen) {
+      //triggerCloseInput
+      inputAnimation.start({ scaleX: 0 });
+    } else {
+      //triggerOpneanimation
+      inputAnimation.start({ scaleX: 1 });
+    }
+    setSearchOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    scrollY.onChange(() => {
+      if (scrollY.get() > 80) {
+        navAnimation.start('scroll');
+      } else {
+        navAnimation.start('top');
+      }
+    });
+  }, [scrollY, navAnimation]);
 
   return (
-    <Nav>
+    <Nav
+      variants={navVariants}
+      animate={navAnimation}
+      initial={{ backgroundColor: 'rgba(0,0,0,1)' }}
+    >
       <Col>
         <Logo
           variants={logoVariants}
@@ -100,26 +152,39 @@ function Header() {
         </Logo>
         <Items>
           <Item>
-            <Link to="/">Home {homeMatch?.isExact && <Circle />}</Link>
+            <Link to="/">
+              Home {homeMatch?.isExact && <Circle layoutId="Circle" />}
+            </Link>
           </Item>
           <Item>
-            <Link to="/tv">Tv Shows {tvMatch && <Circle />}</Link>
+            <Link to="/tv">
+              Tv Shows {tvMatch && <Circle layoutId="Circle" />}
+            </Link>
           </Item>
         </Items>
       </Col>
       <Col>
         <Search>
-          <svg
+          <motion.svg
+            onClick={toggleSearch}
+            animate={{ x: searchOpen ? -150 : 0 }}
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
+            transition={{ type: 'linear' }}
           >
             <path
               fillRule="evenodd"
               d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
               clipRule="evenodd"
             ></path>
-          </svg>
+          </motion.svg>
+          <Input
+            animate={inputAnimation}
+            transition={{ type: 'linear' }}
+            initial={{ scaleX: searchOpen ? 1 : 0 }}
+            placeholder="search for movie or tv..."
+          />
         </Search>
       </Col>
     </Nav>
