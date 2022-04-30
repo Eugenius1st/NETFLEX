@@ -1,4 +1,5 @@
 import { motion, AnimatePresence, useViewportScroll } from 'framer-motion';
+//AnimatePresence는 컴포넌트가 render 되거나 destroy 될 때 효과를 줄 수 있다.
 import { type } from 'os';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
@@ -42,15 +43,16 @@ const Overview = styled.p`
 
 const Slider = styled.div`
   position: relative;
-  top: -80px;
+  top: -15em;
 `;
 
 const Row = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
+  gap: 10px;
   position: absolute;
   width: 100%;
+  margin-bottom: 10px;
 `;
 
 const Box = styled(motion.div)<{ bgPhoto: string }>`
@@ -183,6 +185,7 @@ function Home() {
   const [leaving, setLeaving] = useState(false);
 
   const increaseIndex = () => {
+    //index를 증가시키는 함수
     if (data) {
       if (leaving) return;
       toggleLeaving();
@@ -214,6 +217,7 @@ function Home() {
         <>
           <Banner
             onClick={increaseIndex}
+            //값을 변경하도록 한다
             bgPhoto={makeImagePath(data?.results[0].backdrop_path || '')}
           >
             <Title>{data?.results[0].title}</Title>
