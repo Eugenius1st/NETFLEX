@@ -43,7 +43,7 @@ const Overview = styled.p`
 
 const Slider = styled.div`
   position: relative;
-  top: -15em;
+  top: -10em;
 `;
 
 const Row = styled(motion.div)`
@@ -132,14 +132,16 @@ const BigOverview = styled.p`
 `;
 
 const rowVariants = {
+  //슬라이더 기능 구현
   hidden: {
-    x: window.outerWidth + 5,
+    x: window.outerWidth,
+    //사용자의 window 크기
   },
   visible: {
     x: 0,
   },
   exit: {
-    x: -window.outerWidth - 5,
+    x: -window.outerWidth,
   },
 };
 
@@ -183,6 +185,8 @@ function Home() {
   );
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  //index를 증가시키기 전에 체크한다, leaing이 true면 reuturn한다 false면 원래대로 작동한다.
+  //간격이 생기는 것을 방지하기 위함이다
 
   const increaseIndex = () => {
     //index를 증가시키는 함수
@@ -190,13 +194,17 @@ function Home() {
       if (leaving) return;
       toggleLeaving();
       const totalMovies = data.results.length - 1;
+      // movie의 길이를정해두었다.
       const maxIndex = Math.floor(totalMovies / offset) - 1;
-
+      // 나중에는 영화가 늘어나 정수가 될 수 도 있으니 floor로 올림처리해준다
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+      //index를 증가시킬 때 확인하는 절차를 거치는 것이다. 만약 maxLen 이면 0으로 되돌리고
+      // 그렇지 않다면 증가시킨다.
     }
   };
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
+  //leaving을 반전시키는 역할을 한다.
   const onBoxClicked = (movieId: number) => {
     history.push(`/movies/${movieId}`);
   };
@@ -225,17 +233,22 @@ function Home() {
           </Banner>
           <Slider>
             <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+              {/* onExitComplete에 함수를 넣으면 exit가 끝났을 때 실행된다 
+              initial = {false} 는 처음에 슬라이드가 들어오는 것을 fix해준다*/}
               <Row
                 key={index}
+                //슬라이더 기능 구현 key 값의 증감에 따라 slider 변경
+                //key만 바뀌면 exit가 실행되고 initial이 실행되고 animate까지 실행한다
                 variants={rowVariants}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                transition={{ type: 'tween', duration: 1 }}
+                transition={{ type: 'tween', duration: 0.6 }}
               >
                 {data?.results
                   .slice(1)
                   .slice(offset * index, offset * index + offset)
+                  //영화가 담긴 배열을 자르는 역할
                   .map((movie) => (
                     <Box
                       layoutId={movie.id + ''}
