@@ -302,6 +302,7 @@ function Home() {
                       <BigCover
                         style={{
                           backgroundImage: `linear-gradient(to top, black, transparent ), url(${makeImagePath(
+                            //이미지를 2개주어 깊이감 조절
                             clickedMovie.backdrop_path,
                             'w500'
                           )})`,
