@@ -152,6 +152,8 @@ function Header() {
   const onValid = (data: IForm) => {
     console.log(data);
     history.push(`/search?keyword=${data.keyword}`);
+    //history를 이용해 query argument로 keyword 를 data.keyword로 넣어준다
+    // 사용자를 search url로 옮겨준다
   };
   return (
     <Nav variants={navVariants} animate={navAnimation} initial="up">
@@ -196,6 +198,8 @@ function Header() {
           </motion.svg>
           <Input
             {...register('keyword', { required: true, minLength: 2 })}
+            //form으로 감싸고 enter을 눌렀을 때 검색하도록 한다
+            //function을 form에 넣어주어야한다.
             animate={inputAnimation}
             initial={{ scaleX: 0 }}
             transition={{ type: 'linear' }}
