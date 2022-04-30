@@ -67,6 +67,7 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   //position: relative;
   &:first-child {
     transform-origin: center left;
+    //맨 끝 포스터들이 잘리지 않게 커지도록 한다.
   }
   &:last-child {
     transform-origin: center right;
@@ -146,17 +147,19 @@ const rowVariants = {
 };
 
 const boxVariants = {
+  //slider box의 hover상태 animation
   normal: {
     scale: 1,
     transition: { type: 'tween' },
   },
   hover: {
     //zIndex: 99,
-    scale: 1.3,
+    scale: 1.5,
     y: -50,
     transition: {
       delay: 0.3,
       type: 'tween',
+      //bounce되는 애니매이션 제거
     },
   },
 };
@@ -226,10 +229,10 @@ function Home() {
           <Banner
             onClick={increaseIndex}
             //값을 변경하도록 한다
-            bgPhoto={makeImagePath(data?.results[0].backdrop_path || '')}
+            bgPhoto={makeImagePath(data?.results[2].backdrop_path || '')}
           >
-            <Title>{data?.results[0].title}</Title>
-            <Overview>{data?.results[0].overview}</Overview>
+            <Title>{data?.results[2].title}</Title>
+            <Overview>{data?.results[2].overview}</Overview>
           </Banner>
           <Slider>
             <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
@@ -258,6 +261,8 @@ function Home() {
                       initial="normal"
                       bgPhoto={makeImagePath(movie.backdrop_path, 'w500')}
                       onClick={() => onBoxClicked(movie.id)}
+                      transition={{ type: 'tween' }}
+                      //bounce 효과 제거
                     >
                       <Info variants={infoVariants}>
                         <h4>{movie.title}</h4>
