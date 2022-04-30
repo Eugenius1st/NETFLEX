@@ -86,7 +86,6 @@ const Info = styled(motion.div)`
   h4 {
     text-align: center;
     font-size: 16px;
-    font-weight: bold;
     color: ${(props) => props.theme.white.darker};
   }
 `;
@@ -183,7 +182,9 @@ const offset = 6;
 
 function Home() {
   const history = useHistory();
+  //url을 왔다갔다 하기 위함
   const bigMovieMatch = useRouteMatch<{ movieId: string }>('/movies/:movieId');
+  //해당 url에 있는지 확인하기 위해 useRouteMath 사용(따로 /movies/:movieId 에 해당하는 Route가 없기때문)
   console.log(bigMovieMatch); // {"path": "/movies/:movieId", "url": "/movies/580489", "isExact": true, "params": { "movieId": "580489" }}
   const { scrollY, scrollYProgress } = useViewportScroll();
   const { data, isLoading } = useQuery<IGetMovieResult>(
@@ -213,6 +214,7 @@ function Home() {
   const toggleLeaving = () => setLeaving((prev) => !prev);
   //leaving을 반전시키는 역할을 한다.
   const onBoxClicked = (movieId: number) => {
+    //box가 클릭되었을 때 호출될 함수
     history.push(`/movies/${movieId}`);
   };
 
@@ -265,6 +267,7 @@ function Home() {
                       initial="normal"
                       bgPhoto={makeImagePath(movie.backdrop_path, 'w500')}
                       onClick={() => onBoxClicked(movie.id)}
+                      //익명의 함수로 onBoxClicked에게 prop을 넘겨준다
                       transition={{ type: 'tween' }}
                       //bounce 효과 제거
                     >
@@ -279,6 +282,7 @@ function Home() {
             </AnimatePresence>
           </Slider>
           <AnimatePresence>
+            {/* 특정 url에 있을때 render 되도록 한다 */}
             {bigMovieMatch ? (
               <>
                 <Overlay
@@ -289,6 +293,7 @@ function Home() {
                 <BigMovie
                   style={{ top: scrollY.get() + 100 }}
                   layoutId={bigMovieMatch.params.movieId + ''}
+                  //layoutId를 통해 두 컴포넌트사이에 transition 을 만들어줌
                 >
                   {clickedMovie && (
                     <>
