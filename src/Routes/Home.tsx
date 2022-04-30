@@ -33,6 +33,7 @@ const Banner = styled.div<{ bgPhoto: string }>`
 
 const Title = styled.h2`
   font-size: 48px;
+  font-weight: 600;
   margin-bottom: 15px;
 `;
 
@@ -75,6 +76,7 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
 `;
 
 const Info = styled(motion.div)`
+  //작게 영화 title 알려주는 부분
   padding: 10px;
   background-color: ${(props) => props.theme.black.lighter};
   opacity: 0;
@@ -84,6 +86,7 @@ const Info = styled(motion.div)`
   h4 {
     text-align: center;
     font-size: 16px;
+    font-weight: bold;
     color: ${(props) => props.theme.white.darker};
   }
 `;
@@ -168,7 +171,8 @@ const infoVariants = {
   hover: {
     opacity: 1,
     transition: {
-      delay: 0.3,
+      delay: 0.4,
+      duration: 0.1,
       type: 'tween',
     },
   },
@@ -229,10 +233,10 @@ function Home() {
           <Banner
             onClick={increaseIndex}
             //값을 변경하도록 한다
-            bgPhoto={makeImagePath(data?.results[2].backdrop_path || '')}
+            bgPhoto={makeImagePath(data?.results[11].backdrop_path || '')}
           >
-            <Title>{data?.results[2].title}</Title>
-            <Overview>{data?.results[2].overview}</Overview>
+            <Title>{data?.results[11].title}</Title>
+            <Overview>{data?.results[11].overview}</Overview>
           </Banner>
           <Slider>
             <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
@@ -265,6 +269,8 @@ function Home() {
                       //bounce 효과 제거
                     >
                       <Info variants={infoVariants}>
+                        {/* 자식 element에 같은 key를 가진 variants를 넣어주기만 하면
+                        똑같이 작동한다 */}
                         <h4>{movie.title}</h4>
                       </Info>
                     </Box>

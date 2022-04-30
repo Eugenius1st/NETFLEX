@@ -13,6 +13,7 @@ const Nav = styled(motion.nav)`
   top: 0;
   height: 80px;
   padding: 20px 60px;
+  font-size: 20px;
 `;
 
 const Col = styled.div`
@@ -54,6 +55,7 @@ const Search = styled.form`
   align-items: center;
   position: relative;
   svg {
+    margin-left: -70px;
     height: 25px;
   }
 `;
