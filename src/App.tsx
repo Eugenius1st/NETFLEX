@@ -10,14 +10,15 @@ function App() {
     <Router>
       <Header />
       <Switch>
-        <Route path="/">
-          <Home />
-        </Route>
         <Route path="/tv">
           <Tv />
         </Route>
         <Route path="/search">
           <Search />
+        </Route>
+        {/* Router는 항상 '/'로 시작하므로 Home을 제일 아래로 옮겨줘야 한다. */}
+        <Route path="/">
+          <Home />
         </Route>
       </Switch>
     </Router>
