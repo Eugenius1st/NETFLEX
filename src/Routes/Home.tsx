@@ -102,7 +102,7 @@ const Overlay = styled(motion.div)`
 const BigMovie = styled(motion.div)`
   position: absolute;
   width: 40vw;
-  height: 50vh;
+  height: 45vh;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -219,6 +219,7 @@ function Home() {
   };
 
   const onOverlayClick = () => history.push('/');
+  //배경을 클릭하면 이전으로 돌아가도록 한다.
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
     data?.results.find(
@@ -291,7 +292,8 @@ function Home() {
                   animate={{ opacity: 1 }}
                 />
                 <BigMovie
-                  style={{ top: scrollY.get() + 100 }}
+                  style={{ top: scrollY.get() + 230 }}
+                  //어디있더라도, 스크롤을 많이 내렸어도 top 속성의 값은 거기가 된다
                   layoutId={bigMovieMatch.params.movieId + ''}
                   //layoutId를 통해 두 컴포넌트사이에 transition 을 만들어줌
                 >
