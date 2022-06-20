@@ -236,7 +236,7 @@ function Home() {
           <Banner
             onClick={increaseIndex}
             //값을 변경하도록 한다
-            bgPhoto={makeImagePath(data?.results[11].backdrop_path || '')}
+            bgPhoto={makeImagePath(data?.results[18].backdrop_path || '')}
           >
             <Title>{data?.results[11].title}</Title>
             <Overview>{data?.results[11].overview}</Overview>
